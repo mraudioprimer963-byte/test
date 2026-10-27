@@ -4,7 +4,7 @@ import {
   createEditor,
   type OfficeEditor
 } from 'oo-offline'
-import { LanguageSwitcher, useLocale } from './i18n'
+import { useLocale } from './i18n'
 import { clearPendingDoc, getPendingDoc, type PendingDoc } from './pendingDoc'
 import { writeFileBuffer } from './fs/workspace'
 import { parseEditorQuery } from './route'
@@ -146,7 +146,6 @@ export function EditorPage(props: { path: string; navigate: (to: string) => void
         <span className={`dot${modified ? ' on' : ''}`} />
         <span className="title">{doc?.title || t('editor')}</span>
         <span className="bar-status">{status}</span>
-        <LanguageSwitcher />
         <button type="button" className="btn primary" disabled={saving || !doc} onClick={() => void onSave()}>
           {saving ? t('saving') : t('save')}
         </button>

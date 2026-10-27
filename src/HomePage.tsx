@@ -9,7 +9,7 @@ import {
   supportsFileSystemAccess,
   type WorkspaceFile
 } from './fs/workspace'
-import { LanguageSwitcher, useLocale } from './i18n'
+import { useLocale } from './i18n'
 import { setPendingDoc } from './pendingDoc'
 
 function formatSize(bytes: number): string {
@@ -167,7 +167,6 @@ export function HomePage(props: { navigate: (to: string) => void }) {
         </nav>
 
         <div className="sider-foot">
-          <LanguageSwitcher />
           {dir && (
             <button
               type="button"

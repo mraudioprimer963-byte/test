@@ -12,12 +12,6 @@ export type AppLocale = 'zh-CN' | 'en' | 'zh-TW'
 
 const STORAGE_KEY = 'oo-web-local-lang'
 
-export const LOCALE_OPTIONS: { value: AppLocale; label: string }[] = [
-  { value: 'zh-CN', label: '中文' },
-  { value: 'en', label: 'EN' },
-  { value: 'zh-TW', label: '繁中' }
-]
-
 type MessageKey =
   | 'brandSub'
   | 'navNew'
@@ -169,14 +163,15 @@ const MESSAGES: Record<AppLocale, Record<MessageKey, string>> = {
   }
 }
 
+/** Locked to English. Always returns 'en' and clears any previously stored choice. */
 function readStoredLocale(): AppLocale {
   try {
-    const v = localStorage.getItem(STORAGE_KEY)
-    if (v === 'zh-CN' || v === 'en' || v === 'zh-TW') return v
+    // Remove any previously saved language so existing users switch to English too.
+    localStorage.removeItem(STORAGE_KEY)
   } catch {
     /* ignore */
   }
-  return 'zh-CN'
+  return 'en'
 }
 
 function applyHtmlLang(locale: AppLocale) {
@@ -200,14 +195,10 @@ export function LocaleProvider(props: { children: ReactNode }) {
     return initial
   })
 
-  const setLocale = useCallback((next: AppLocale) => {
-    setLocaleState(next)
-    applyHtmlLang(next)
-    try {
-      localStorage.setItem(STORAGE_KEY, next)
-    } catch {
-      /* ignore */
-    }
+  // Kept for API compatibility, but the app is locked to English.
+  const setLocale = useCallback((_next: AppLocale) => {
+    setLocaleState('en')
+    applyHtmlLang('en')
   }, [])
 
   const value = useMemo<LocaleContextValue>(() => {
@@ -227,23 +218,4 @@ export function useLocale(): LocaleContextValue {
   const ctx = useContext(LocaleContext)
   if (!ctx) throw new Error('useLocale must be used within LocaleProvider')
   return ctx
-}
-
-export function LanguageSwitcher() {
-  const { locale, setLocale, t } = useLocale()
-  return (
-    <div className="lang-switch" role="group" aria-label={t('langLabel')}>
-      {LOCALE_OPTIONS.map((opt) => (
-        <button
-          key={opt.value}
-          type="button"
-          className={`lang-btn${locale === opt.value ? ' active' : ''}`}
-          aria-pressed={locale === opt.value}
-          onClick={() => setLocale(opt.value)}
-        >
-          {opt.label}
-        </button>
-      ))}
-    </div>
-  )
 }
